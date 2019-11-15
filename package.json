@@ -1,0 +1,29 @@
+{
+  "name": "comake",
+  "version": "1.0.0",
+  "description": "An app to help local governments work better for their constituents",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shaun Orpen",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "connect-session-knex": "^1.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-sessions": "^1.0.6",
+    "helmet": "^3.21.2",
+    "knex": "^0.20.2",
+    "pg": "^7.12.1",
+    "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
+  }
+}
