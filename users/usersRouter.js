@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const express = require("express");
 const users = require("./usersModel");
 const {
@@ -24,8 +25,12 @@ router.get("/:id", validateUser, (req, res) => {
 });
 
 router.post("/", validateNewUser, (req, res) => {
+  const user = {
+    ...req.body,
+    password: bcrypt.hashSync(req.body.password, 11)
+  };
   users
-    .addUser(req.body)
+    .addUser(user)
     .then(user => {
       res.status(200).json({
         message: `User id ${user.id} successfully created.`,

@@ -3,6 +3,7 @@ const db = require("../database/dbConfig");
 function findById(id) {
   return db("users")
     .where({ id })
+    .select("id", "email", "first_name", "last_name", "phone")
     .first();
 }
 
