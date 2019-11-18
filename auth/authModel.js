@@ -6,4 +6,6 @@ function findByEmail(email) {
     .first();
 }
 
-module.exports = findByEmail;
+module.exports = {
+  findByEmail
+};

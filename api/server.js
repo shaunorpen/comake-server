@@ -4,8 +4,8 @@ const helmet = require("helmet");
 const session = require("express-session");
 const KnexSessionStore = require("connect-session-knex")(session);
 
+const authRouter = require("../auth/authRouter");
 const usersRouter = require("../users/usersRouter");
-// const authRouter = require("../auth/authRouter");
 
 const sessionConfig = {
   secret: process.env.COOKIE_SECRET,
@@ -27,7 +27,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(session(sessionConfig));
 
-// server.use("/api/auth", authRouter);
+server.use("/api/auth", authRouter);
 server.use("/api/users", usersRouter);
 
 server.get("*", (req, res) => {
