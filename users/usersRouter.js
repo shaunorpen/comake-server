@@ -5,7 +5,6 @@ const {
   validateUser,
   validateNewUser,
   validateUpdatedUser,
-  validateLogin,
   validateDuplicateUser
 } = require("./usersMiddleware");
 
@@ -42,12 +41,6 @@ router.post("/", validateNewUser, validateDuplicateUser, (req, res) => {
     .catch(error => {
       res.status(500).json({ message: error.message });
     });
-});
-
-router.post("/login", validateLogin, (req, res) => {
-  res
-    .status(200)
-    .json({ message: `Welcome, ${req.user.first_name}!`, user: req.user });
 });
 
 router.put("/:id", validateUser, validateUpdatedUser, validateDuplicateUser, (req, res) => {
