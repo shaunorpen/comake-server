@@ -175,7 +175,9 @@ describe("usersRouter", () => {
           password: "123"
         })
         .expect(401)
-        .expect({ message: 'Please check your username and password and try again.' });
+        .expect({
+          message: "Please check your username and password and try again."
+        });
     });
     test("doesn't allow wrong email", () => {
       return request(server)
@@ -185,7 +187,9 @@ describe("usersRouter", () => {
           password: "1234"
         })
         .expect(401)
-        .expect({ message: 'Please check your username and password and try again.' });
+        .expect({
+          message: "Please check your username and password and try again."
+        });
     });
     test("doesn't allow missing email", () => {
       return request(server)
@@ -194,7 +198,7 @@ describe("usersRouter", () => {
           password: "1234"
         })
         .expect(400)
-        .expect({ message: 'Please submit a username and password.' });
+        .expect({ message: "Please submit a username and password." });
     });
     test("doesn't allow missing password", () => {
       return request(server)
@@ -203,9 +207,51 @@ describe("usersRouter", () => {
           email: "shaun@shaun.com"
         })
         .expect(400)
-        .expect({ message: 'Please submit a username and password.' });
+        .expect({ message: "Please submit a username and password." });
     });
   });
-  //   describe("PUT /api/users/:id", () => {});
+  describe("PUT /api/users/:id", () => {
+    test("allows edit of valid user", () => {
+      return request(server)
+        .put("/api/users/4")
+        .send({ email: "jeff@jeffdavies.com", password: "4321" })
+        .expect(200)
+        .expect({
+          message: "User id 4 successfully updated.",
+          updatedUser: {
+            id: 4,
+            email: "jeff@jeffdavies.com",
+            first_name: "Jeff",
+            last_name: "Davies",
+            phone: "+44 (0)1234 567894"
+          }
+        });
+    });
+    test("does not allow edit of invalid user", () => {
+      return request(server)
+        .put("/api/users/5")
+        .send({ email: "jeff@jeffdavies.com", password: "4321" })
+        .expect(404)
+        .expect({ message: "There is no user with id 5." });
+    });
+    test("does not allow edit to match existing user", () => {
+      return request(server)
+        .put("/api/users/4")
+        .send({ email: "shaun@shaun.com" })
+        .expect(303)
+        .expect({
+          message: "There's already an account registered for shaun@shaun.com."
+        });
+    });
+    test("does not allow edit with no changes", () => {
+      return request(server)
+        .put("/api/users/4")
+        .expect(400)
+        .expect({
+          message:
+            "Please ensure the updated user has a new email, password, first_name, last_name or phone number."
+        });
+    });
+  });
   //   describe("DELETE /api/users/:id", () => {});
 });

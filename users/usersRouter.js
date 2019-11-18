@@ -50,7 +50,7 @@ router.post("/login", validateLogin, (req, res) => {
     .json({ message: `Welcome, ${req.user.first_name}!`, user: req.user });
 });
 
-router.put("/:id", validateUser, validateUpdatedUser, (req, res) => {
+router.put("/:id", validateUser, validateUpdatedUser, validateDuplicateUser, (req, res) => {
   users
     .updateUser(req.params.id, req.body)
     .then(user => {
