@@ -36,6 +36,25 @@ function validateNewUser(req, res, next) {
   }
 }
 
+function validateDuplicateUser(req, res, next) {
+  users
+    .findByEmail(req.body.email)
+    .then(user => {
+      if (user) {
+        res
+          .status(303)
+          .json({
+            message: `There's already an account registered for ${user.email}.`
+          });
+      } else {
+        next();
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ message: error.message });
+    });
+}
+
 function validateUpdatedUser(req, res, next) {
   if (
     req.body.email ||
@@ -68,9 +87,9 @@ function validateLogin(req, res, next) {
         };
         next();
       } else {
-        res
-          .status(401)
-          .json({ message: "Please check your username and password and try again." });
+        res.status(401).json({
+          message: "Please check your username and password and try again."
+        });
       }
     })
     .catch(error => {
@@ -82,5 +101,6 @@ module.exports = {
   validateUser,
   validateNewUser,
   validateUpdatedUser,
-  validateLogin
+  validateLogin,
+  validateDuplicateUser
 };

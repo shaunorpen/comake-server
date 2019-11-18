@@ -5,7 +5,8 @@ const {
   validateUser,
   validateNewUser,
   validateUpdatedUser,
-  validateLogin
+  validateLogin,
+  validateDuplicateUser
 } = require("./usersMiddleware");
 
 const router = express.Router();
@@ -25,7 +26,7 @@ router.get("/:id", validateUser, (req, res) => {
   res.status(200).json(req.user);
 });
 
-router.post("/", validateNewUser, (req, res) => {
+router.post("/", validateNewUser, validateDuplicateUser, (req, res) => {
   const user = {
     ...req.body,
     password: bcrypt.hashSync(req.body.password, 11)
@@ -33,7 +34,7 @@ router.post("/", validateNewUser, (req, res) => {
   users
     .addUser(user)
     .then(user => {
-      res.status(200).json({
+      res.status(201).json({
         message: `User id ${user.id} successfully created.`,
         user
       });
