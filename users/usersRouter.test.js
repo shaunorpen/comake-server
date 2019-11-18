@@ -253,5 +253,27 @@ describe("usersRouter", () => {
         });
     });
   });
-  //   describe("DELETE /api/users/:id", () => {});
+  describe("DELETE /api/users/:id", () => {
+    test("allows delete valid user", () => {
+      return request(server)
+        .delete("/api/users/4")
+        .expect(200)
+        .expect({
+          message: "User id 4 successfully deleted.",
+          deletedUser: {
+            id: 4,
+            email: "jeff@jeffdavies.com",
+            first_name: "Jeff",
+            last_name: "Davies",
+            phone: "+44 (0)1234 567894"
+          }
+        });
+    });
+    test("does not allow delete of invalid user", () => {
+      return request(server)
+        .delete("/api/users/5")
+        .expect(404)
+        .expect({ message: "There is no user with id 5." });
+    });
+  });
 });
