@@ -7,6 +7,12 @@ function findById(id) {
     .first();
 }
 
+function findByEmail(email) {
+  return db("users")
+    .where({ email })
+    .first();
+}
+
 module.exports = {
   getAllUsers: () => {
     return db("users");
@@ -27,5 +33,6 @@ module.exports = {
       .where({ id })
       .del();
   },
-  findById
+  findById,
+  findByEmail
 };

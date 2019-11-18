@@ -4,7 +4,8 @@ const users = require("./usersModel");
 const {
   validateUser,
   validateNewUser,
-  validateUpdatedUser
+  validateUpdatedUser,
+  validateLogin
 } = require("./usersMiddleware");
 
 const router = express.Router();
@@ -40,6 +41,12 @@ router.post("/", validateNewUser, (req, res) => {
     .catch(error => {
       res.status(500).json({ message: error.message });
     });
+});
+
+router.post("/login", validateLogin, (req, res) => {
+  res
+    .status(200)
+    .json({ message: `Welcome, ${req.user.first_name}!`, user: req.user });
 });
 
 router.put("/:id", validateUser, validateUpdatedUser, (req, res) => {
