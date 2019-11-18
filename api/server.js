@@ -2,14 +2,21 @@ const cors = require("cors");
 const express = require("express");
 const helmet = require("helmet");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session);
 
 const usersRouter = require("../users/usersRouter");
 
 const sessionConfig = {
-  secret: "keyboard cat",
+  secret: process.env.COOKIE_SECRET,
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 1000 * 60 * 60, httpOnly: false },
+  store: new KnexSessionStore({
+    knex: require("../database/dbConfig"),
+    tablename: "sessions",
+    createtable: true,
+    clearInterval: 1000 * 60 * 60
+  })
 };
 
 const server = express();
