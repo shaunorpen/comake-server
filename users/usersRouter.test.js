@@ -2,15 +2,31 @@ const knex = require("../database/dbConfig");
 const request = require("supertest");
 const server = require("../api/server");
 
+let cookie;
+
+const user = {
+  email: "shaun@shaun.com",
+  password: "1234"
+};
+
 beforeAll(() => {
   return knex.seed.run();
 });
 
 describe("usersRouter", () => {
+  describe("POST /api/auth/login", () => {
+    test("log in as existing user and get cookie", async () => {
+      const response = await request(server)
+        .post("/api/auth/login")
+        .send(user);
+      cookie = response.headers["set-cookie"];
+    });
+  });
   describe("GET /api/users", () => {
     test("returns correct list of users", () => {
       return request(server)
         .get("/api/users")
+        .set("cookie", cookie)
         .expect(200)
         .expect([
           {
@@ -42,11 +58,18 @@ describe("usersRouter", () => {
           }
         ]);
     });
+    test("returns error if not authed", () => {
+      return request(server)
+        .get("/api/users")
+        .expect(401)
+        .expect({ message: "Please log in to access this resource." });
+    });
   });
   describe("GET /api/users/:id", () => {
     test("returns correct user for id 1", () => {
       return request(server)
         .get("/api/users/1")
+        .set("cookie", cookie)
         .expect(200)
         .expect({
           id: 1,
@@ -56,9 +79,16 @@ describe("usersRouter", () => {
           phone: "+44 (0)1234 567890"
         });
     });
+    test("returns error if not authed", () => {
+      return request(server)
+        .get("/api/users/1")
+        .expect(401)
+        .expect({ message: "Please log in to access this resource." });
+    });
     test("returns correct user for id 2", () => {
       return request(server)
         .get("/api/users/2")
+        .set("cookie", cookie)
         .expect(200)
         .expect({
           id: 2,
@@ -71,6 +101,7 @@ describe("usersRouter", () => {
     test("returns correct user for id 3", () => {
       return request(server)
         .get("/api/users/3")
+        .set("cookie", cookie)
         .expect(200)
         .expect({
           id: 3,
@@ -83,12 +114,14 @@ describe("usersRouter", () => {
     test("returns error message for invalid id 4", () => {
       return request(server)
         .get("/api/users/4")
+        .set("cookie", cookie)
         .expect(404)
         .expect({ message: "There is no user with id 4." });
     });
     test("returns error message for invalid id a", () => {
       return request(server)
         .get("/api/users/a")
+        .set("cookie", cookie)
         .expect(404)
         .expect({ message: "There is no user with id a." });
     });
@@ -104,6 +137,7 @@ describe("usersRouter", () => {
           last_name: "Davies",
           phone: "+44 (0)1234 567894"
         })
+        .set("cookie", cookie)
         .expect(201)
         .expect({
           message: "User id 4 successfully created.",
@@ -116,6 +150,19 @@ describe("usersRouter", () => {
           }
         });
     });
+    test("returns error if not authed", () => {
+      return request(server)
+        .post("/api/users")
+        .send({
+          email: "jeff@jeff.com",
+          password: "1234",
+          first_name: "Jeff",
+          last_name: "Davies",
+          phone: "+44 (0)1234 567894"
+        })
+        .expect(401)
+        .expect({ message: "Please log in to access this resource." });
+    });
     test("errors if duplicate user is created", () => {
       return request(server)
         .post("/api/users")
@@ -126,6 +173,7 @@ describe("usersRouter", () => {
           last_name: "Davies",
           phone: "+44 (0)1234 567894"
         })
+        .set("cookie", cookie)
         .expect(303)
         .expect({
           message: "There's already an account registered for jeff@jeff.com."
@@ -140,6 +188,7 @@ describe("usersRouter", () => {
           first_name: "Jeff",
           last_name: "Davies"
         })
+        .set("cookie", cookie)
         .expect(400)
         .expect({
           message:
@@ -152,6 +201,7 @@ describe("usersRouter", () => {
       return request(server)
         .put("/api/users/4")
         .send({ email: "jeff@jeffdavies.com", password: "4321" })
+        .set("cookie", cookie)
         .expect(200)
         .expect({
           message: "User id 4 successfully updated.",
@@ -164,10 +214,18 @@ describe("usersRouter", () => {
           }
         });
     });
+    test("returns error if not authed", () => {
+      return request(server)
+        .put("/api/users/4")
+        .send({ email: "jeff@jeffdavies.com", password: "4321" })
+        .expect(401)
+        .expect({ message: "Please log in to access this resource." });
+    });
     test("does not allow edit of invalid user", () => {
       return request(server)
         .put("/api/users/5")
         .send({ email: "jeff@jeffdavies.com", password: "4321" })
+        .set("cookie", cookie)
         .expect(404)
         .expect({ message: "There is no user with id 5." });
     });
@@ -175,6 +233,7 @@ describe("usersRouter", () => {
       return request(server)
         .put("/api/users/4")
         .send({ email: "shaun@shaun.com" })
+        .set("cookie", cookie)
         .expect(303)
         .expect({
           message: "There's already an account registered for shaun@shaun.com."
@@ -183,6 +242,7 @@ describe("usersRouter", () => {
     test("does not allow edit with no changes", () => {
       return request(server)
         .put("/api/users/4")
+        .set("cookie", cookie)
         .expect(400)
         .expect({
           message:
@@ -194,6 +254,7 @@ describe("usersRouter", () => {
     test("allows delete valid user", () => {
       return request(server)
         .delete("/api/users/4")
+        .set("cookie", cookie)
         .expect(200)
         .expect({
           message: "User id 4 successfully deleted.",
@@ -206,9 +267,16 @@ describe("usersRouter", () => {
           }
         });
     });
+    test("returns error if not authed", () => {
+      return request(server)
+        .delete("/api/users/4")
+        .expect(401)
+        .expect({ message: "Please log in to access this resource." });
+    });
     test("does not allow delete of invalid user", () => {
       return request(server)
         .delete("/api/users/5")
+        .set("cookie", cookie)
         .expect(404)
         .expect({ message: "There is no user with id 5." });
     });

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "DB_ENV=testing jest --watchAll -i"
+    "test": "DB_ENV=testing jest --watchAll -i",
+    "test:debug": "DB_ENV=testing node --inspect node_modules/.bin/jest --watchAll -i"
   },
   "author": "Shaun Orpen",
   "license": "ISC",
