@@ -36,20 +36,24 @@ function validateNewUser(req, res, next) {
 }
 
 function validateDuplicateUser(req, res, next) {
-  users
-    .findByEmail(req.body.email)
-    .then(user => {
-      if (user) {
-        res.status(303).json({
-          message: `There's already an account registered for ${user.email}.`
-        });
-      } else {
-        next();
-      }
-    })
-    .catch(error => {
-      res.status(500).json({ message: error.message });
-    });
+  if (req.user && req.body.email && req.user.email !== req.body.email) {
+    users
+      .findByEmail(req.body.email)
+      .then(user => {
+        if (user) {
+          res.status(303).json({
+            message: `There's already an account registered for ${user.email}.`
+          });
+        } else {
+          next();
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ message: error.message });
+      });
+  } else {
+    next();
+  }
 }
 
 function validateUpdatedUser(req, res, next) {

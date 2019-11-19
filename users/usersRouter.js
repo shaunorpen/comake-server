@@ -43,19 +43,31 @@ router.post("/", validateNewUser, validateDuplicateUser, (req, res) => {
     });
 });
 
-router.put("/:id", validateUser, validateUpdatedUser, validateDuplicateUser, (req, res) => {
-  users
-    .updateUser(req.params.id, req.body)
-    .then(user => {
-      res.status(200).json({
-        message: `User id ${user.id} successfully updated.`,
-        updatedUser: user
+router.put(
+  "/:id",
+  validateUser,
+  validateUpdatedUser,
+  validateDuplicateUser,
+  (req, res) => {
+    if (req.body.password) {
+      req.body = {
+        ...req.body,
+        password: bcrypt.hashSync(req.body.password, 11)
+      };
+    }
+    users
+      .updateUser(req.params.id, req.body)
+      .then(user => {
+        res.status(200).json({
+          message: `User id ${user.id} successfully updated.`,
+          updatedUser: user
+        });
+      })
+      .catch(error => {
+        res.status(500).json({ message: error.message });
       });
-    })
-    .catch(error => {
-      res.status(500).json({ message: error.message });
-    });
-});
+  }
+);
 
 router.delete("/:id", validateUser, (req, res) => {
   users
