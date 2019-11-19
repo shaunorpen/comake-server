@@ -73,6 +73,17 @@ describe("authRouter", () => {
     });
   });
   describe("GET /auth/logout", () => {
-    test("allows authed user to logout", () => {});
+    test("allows authed user to logout", () => {
+      return request(server)
+        .get("/api/auth/logout")
+        .expect(200)
+        .expect({ message: "You've successfully logged out. Goodbye!" });
+    });
+    test("allows authed user to logout", () => {
+      return request(server)
+        .get("/api/auth/logout")
+        .expect(200)
+        .expect({ message: "You've successfully logged out. Goodbye!" });
+    });
   });
 });
