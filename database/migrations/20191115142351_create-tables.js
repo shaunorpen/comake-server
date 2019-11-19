@@ -14,14 +14,14 @@ exports.up = function(knex) {
     .createTable("issues", table => {
       table.increments();
       table.string("description").notNullable();
-      table.float("location_lat").notNullable();
-      table.float("location_lon").notNullable();
+      table.float("latitude").notNullable();
+      table.float("longitude").notNullable();
       table
         .integer("user_id")
         .notNullable()
         .references("id")
         .inTable("users");
-      table.string("img_stretch").notNullable();
+      table.string("imgURL").notNullable();
     })
     .createTable("votes", table => {
       table
