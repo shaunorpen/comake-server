@@ -36,7 +36,7 @@ function validateNewUser(req, res, next) {
 }
 
 function validateDuplicateUser(req, res, next) {
-  if (req.user && req.body.email && req.user.email !== req.body.email) {
+  if (req.body.email) {
     users
       .findByEmail(req.body.email)
       .then(user => {
