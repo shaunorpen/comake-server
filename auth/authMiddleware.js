@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { findByEmail } = require("../database/utilityFunctions");
+const { findByEmail } = require("./authModel");
 
 function validateLogin(req, res, next) {
   const { email, password } = req.body;
