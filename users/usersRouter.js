@@ -11,7 +11,7 @@ const { restricted } = require("../auth/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", restricted, (req, res) => {
+router.get("/", (req, res) => {
   users
     .getAllUsers()
     .then(users => {
@@ -22,7 +22,7 @@ router.get("/", restricted, (req, res) => {
     });
 });
 
-router.get("/:id", restricted, validateUser, (req, res) => {
+router.get("/:id", validateUser, (req, res) => {
   res.status(200).json(req.user);
 });
 
@@ -46,7 +46,6 @@ router.post("/", validateNewUser, validateDuplicateUser, (req, res) => {
 
 router.put(
   "/:id",
-  restricted,
   validateUser,
   validateUpdatedUser,
   validateDuplicateUser,
@@ -71,7 +70,7 @@ router.put(
   }
 );
 
-router.delete("/:id", restricted, validateUser, (req, res) => {
+router.delete("/:id", validateUser, (req, res) => {
   users
     .deleteUser(req.params.id)
     .then(() => {
